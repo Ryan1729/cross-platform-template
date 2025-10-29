@@ -21,8 +21,7 @@ impl State {
         // not the macro.
         features::log(&format!("{:?}", seed));
 
-        let mut game_state = game::State::new(seed);
-        //game_state.add_splat();
+        let game_state = game::State::new(seed);
 
         Self {
             game_state,

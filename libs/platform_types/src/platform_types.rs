@@ -639,7 +639,6 @@ pub mod sprite {
 }
 
 pub mod command {
-    use xs::Xs;
     use super::{ARGB, sprite, unscaled};
 
     pub type Inner = unscaled::Inner;
@@ -675,10 +674,6 @@ pub mod command {
         pub const fn clipped_inner(x: Inner) -> X {
             X::clipped(unscaled::X(x))
         }
-
-        pub fn gen(rng: &mut Xs) -> X {
-            X::clipped(unscaled::X(xs::range(rng, 0..WIDTH as _) as Inner))
-        }
     }
 
     #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -701,10 +696,6 @@ pub mod command {
 
         pub const fn clipped_inner(y: Inner) -> Y {
             Y::clipped(unscaled::Y(y))
-        }
-
-        pub fn gen(rng: &mut Xs) -> Y {
-            Y::clipped(unscaled::Y(xs::range(rng, 0..WIDTH as _) as Inner))
         }
     }
 
