@@ -32,8 +32,7 @@ impl State {
     }
 }
 
-// #[cfg_attr(feature = "reload", unsafe(no_mangle))]
-#[unsafe(no_mangle)]
+#[cfg_attr(feature = "reload", unsafe(no_mangle))]
 pub fn frame(state: &mut State) -> (&[platform_types::Command], &[SFX]) {
     state.commands.clear();
     state.speaker.clear();
@@ -61,21 +60,6 @@ pub fn press(state: &mut State, button: Button) {
 
 pub fn release(state: &mut State, button: Button) {
     state.input.gamepad.remove(button);
-}
-
-// TODO remove this probably
-impl platform_types::State for State {
-    fn frame(&mut self) -> (&[platform_types::Command], &[SFX]) {
-        frame(self)
-    }
-
-    fn press(&mut self, button: Button) {
-        press(self, button)
-    }
-
-    fn release(&mut self, button: Button) {
-        release(self, button)
-    }
 }
 
 fn update(state: &mut game::State, input: Input, speaker: &mut Speaker) {

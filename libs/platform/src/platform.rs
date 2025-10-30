@@ -159,7 +159,7 @@ mod wasm {
     };
     use wasm_bindgen::JsCast;
     use web_sys::HtmlCanvasElement;
-    use platform_types::{SFX, unscaled};
+    use platform_types::SFX;
 
     pub fn set_canvas(builder: WindowBuilder) -> WindowBuilder {
         let canvas = get_canvas();
