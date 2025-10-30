@@ -32,34 +32,49 @@ impl State {
     }
 }
 
+// #[cfg_attr(feature = "reload", unsafe(no_mangle))]
+#[unsafe(no_mangle)]
+pub fn frame(state: &mut State) -> (&[platform_types::Command], &[SFX]) {
+    state.commands.clear();
+    state.speaker.clear();
+    update_and_render(
+        &mut state.commands,
+        &mut state.game_state,
+        state.input,
+        &mut state.speaker,
+    );
+
+    state.input.previous_gamepad = state.input.gamepad;
+
+    (state.commands.slice(), state.speaker.slice())
+}
+
+pub fn press(state: &mut State, button: Button) {
+    if state.input.previous_gamepad.contains(button) {
+        //This is meant to pass along the key repeat, if any.
+        //Not sure if rewriting history is the best way to do this.
+        state.input.previous_gamepad.remove(button);
+    }
+
+    state.input.gamepad.insert(button);
+}
+
+pub fn release(state: &mut State, button: Button) {
+    state.input.gamepad.remove(button);
+}
+
+// TODO remove this probably
 impl platform_types::State for State {
     fn frame(&mut self) -> (&[platform_types::Command], &[SFX]) {
-        self.commands.clear();
-        self.speaker.clear();
-        update_and_render(
-            &mut self.commands,
-            &mut self.game_state,
-            self.input,
-            &mut self.speaker,
-        );
-
-        self.input.previous_gamepad = self.input.gamepad;
-
-        (self.commands.slice(), self.speaker.slice())
+        frame(self)
     }
 
     fn press(&mut self, button: Button) {
-        if self.input.previous_gamepad.contains(button) {
-            //This is meant to pass along the key repeat, if any.
-            //Not sure if rewriting history is the best way to do this.
-            self.input.previous_gamepad.remove(button);
-        }
-
-        self.input.gamepad.insert(button);
+        press(self, button)
     }
 
     fn release(&mut self, button: Button) {
-        self.input.gamepad.remove(button);
+        release(self, button)
     }
 }
 
@@ -75,18 +90,21 @@ fn render(commands: &mut Commands, state: &game::State) {
     for &Splat { kind, x, y } in &state.splats {
         commands.draw_card(kind, x, y);
 
-        commands.sspr(
-            sprite::XY {
-                x: sprite::X(0),
-                y: sprite::Y(64),
-            },
-            command::Rect::from_unscaled(unscaled::Rect {
-                x: x.saturating_sub(unscaled::W(16)),
-                y: y.saturating_sub(unscaled::H(16)),
-                w: unscaled::W(16),
-                h: unscaled::H(16),
-            })
-        );
+        // Negating this boolean is a quick way to test the hot reloading enabled by the "reload" feature.
+        if true {
+            commands.sspr(
+                sprite::XY {
+                    x: sprite::X(0),
+                    y: sprite::Y(64),
+                },
+                command::Rect::from_unscaled(unscaled::Rect {
+                    x: x.saturating_sub(unscaled::W(16)),
+                    y: y.saturating_sub(unscaled::H(16)),
+                    w: unscaled::W(16),
+                    h: unscaled::H(16),
+                })
+            );
+        }
     }
 }
 
